@@ -1,0 +1,40 @@
+
+ ---
+- name: konfigrasi web  
+  hosts: server
+
+  tasks:
+   - name: Install Python
+     package:
+      name: "python3"
+      state: present
+   - name: install docker sdk dengan pip
+     pip:
+      name: docker
+   - name: Jalankan service docker
+     service:
+      name: "docker"
+      state: started
+   - name: directory web
+     file:
+      state: directory
+      dest: "/root/webpage"
+   - name: pull image httpd 
+     docker_image:
+       name: httpd
+       tag: latest
+       source: pull
+ 
+  
+   - name: Run docker container
+     docker_container:
+         name: WebServer
+         image: httpd:latest
+         state: started
+         exposed_ports:
+         - "80"
+         ports:
+         - "80:80"
+         volumes:
+         - /root/webpage/:/usr/local/apache2/htdocs/
+
